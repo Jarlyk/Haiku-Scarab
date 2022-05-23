@@ -45,7 +45,7 @@ namespace Scarab.Services
             // Validate that mods are installed in case of manual user intervention
             foreach (string? name in db.Mods.Select(x => x.Key))
             {
-                if (Directory.Exists(Path.Combine(config.ModsFolder, name))) 
+                if (Directory.Exists(Path.Combine(config.ModsFolder, name)) || Directory.Exists(Path.Combine(config.DisabledFolder, name))) 
                     continue;
                 
                 Trace.TraceWarning($"Removing missing mod {name}!");
