@@ -116,7 +116,7 @@ namespace Scarab.ViewModels
             if (_Debug)
                 return; 
 
-            const string gh_releases = "https://api.github.com/repos/fifty-six/Scarab/releases/latest";
+            const string gh_releases = "https://api.github.com/repos/Schyvun/Haiku-Scarab/releases/latest";
 
             string json;
             
@@ -124,14 +124,15 @@ namespace Scarab.ViewModels
             {
                 var hc = new HttpClient();
                 
-                hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
+                hc.DefaultRequestHeaders.Add("User-Agent", "Haiku-Scarab");
 
                 json = await hc.GetStringAsync(new Uri(gh_releases));
             }
             catch (Exception e) when (e is HttpRequestException or TimeoutException) {
+                Debug.WriteLine(e);
                 return;
             }
-
+            Debug.WriteLine("test");
             JsonDocument doc = JsonDocument.Parse(json);
 
             if (!doc.RootElement.TryGetProperty("tag_name", out JsonElement tag_elem))
@@ -147,6 +148,7 @@ namespace Scarab.ViewModels
 
             if (!Version.TryParse(tag.Length == 1 ? tag + ".0.0.0" : tag, out Version? version))
                 return;
+            Debug.WriteLine($"Public version of installer is {version}");
 
             if (version <= current_version)
                 return;
@@ -172,7 +174,7 @@ namespace Scarab.ViewModels
 
             if (res == "Get the latest release")
             {
-                Process.Start(new ProcessStartInfo("https://github.com/fifty-six/Scarab/releases/latest") { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo("https://github.com/Schyvun/Haiku-Scarab/releases/latest") { UseShellExecute = true });
                 
                 ((IClassicDesktopStyleApplicationLifetime?) Application.Current?.ApplicationLifetime)?.Shutdown();
             }
