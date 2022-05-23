@@ -4,4 +4,4 @@
 
 This is a mod manager for Haiku aimed at making the process of installing mods easier for users. Forked from https://github.com/fifty-six/Scarab
 
-![screenshot](https://i.imgur.com/grMRx8E.png)
+![screenshot](https://i.imgur.com/V3UW99s.png)
