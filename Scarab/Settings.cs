@@ -24,19 +24,20 @@ namespace Scarab
         // @formatter:off
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
         {
-            "Program Files/Steam/steamapps/common/Hollow Knight",
-            "Program Files (x86)/Steam/steamapps/common/Hollow Knight",
-            "Program Files/GOG Galaxy/Games/Hollow Knight",
-            "Program Files (x86)/GOG Galaxy/Games/Hollow Knight",
-            "Steam/steamapps/common/Hollow Knight",
-            "GOG Galaxy/Games/Hollow Knight"
+            "Program Files/Steam/steamapps/common/Haiku the Robot",
+            "Program Files (x86)/Steam/steamapps/common/Haiku the Robot",
+            "Program Files/GOG Galaxy/Games/Haiku the Robot",
+            "Program Files (x86)/GOG Galaxy/Games/Haiku the Robot",
+            "Steam/steamapps/common/Haiku the Robot",
+            "SteamLibrary/steamapps/common/Haiku the Robot",
+            "GOG Galaxy/Games/Haiku the Robot"
         }
         .SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
 
         private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
         {
-            ".local/.share/Steam/steamapps/common/Hollow Knight",
-            "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
+            ".local/.share/Steam/steamapps/common/Haiku the Robot",
+            "Library/Application Support/Steam/steamapps/common/Haiku the Robot/haiku_the_robot.app"
         }
         .ToImmutableList();
         // @formatter:on
@@ -44,8 +45,8 @@ namespace Scarab
         private static string ConfigPath => Path.Combine
         (
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "HKModInstaller",
-            "HKInstallerSettings.json"
+            "HaikuModInstaller",
+            "HaikuInstallerSettings.json"
         );
 
         internal Settings(string path) => ManagedFolder = path;
@@ -153,7 +154,7 @@ namespace Scarab
 
             IEnumerable<string> library_paths = lines.Select(Parse).OfType<string>();
 
-            path = library_paths.Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
+            path = library_paths.Select(library_path => Path.Combine(library_path, "steamapps", "common", "Haiku the Robot"))
                                 .Select(PathUtil.ValidateWithSuffix)
                                 .FirstOrDefault(x => x is not null);
 

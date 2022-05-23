@@ -87,7 +87,7 @@ namespace Scarab.ViewModels
         {
             NotInstalledState => false,
             // Disabling, so we're putting back the vanilla assembly
-            InstalledState { Enabled: true } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Vanilla)),
+            InstalledState { Enabled: true } => File.Exists(Path.Combine(_settings.ManagedFolder,Installer.Vanilla)),
             // Enabling, so take the modded one.
             InstalledState { Enabled: false } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Modded)),
             // Unreachable
@@ -125,7 +125,7 @@ namespace Scarab.ViewModels
 
         public void OpenModsDirectory()
         {
-            var modsFolder = Path.Combine(_settings.ManagedFolder, "Mods");
+            var modsFolder = Path.Combine(_settings.ManagedFolder, "BepInEx/plugins");
 
             // Create the directory if it doesn't exist,
             // so we don't open a non-existent folder.
@@ -180,11 +180,11 @@ namespace Scarab.ViewModels
 
         private async Task InternalUpdateInstallAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
         {
-            if (Process.GetProcesses().FirstOrDefault(x => x.ProcessName.StartsWith("hollow_knight")) is Process proc)
+            if (Process.GetProcesses().FirstOrDefault(x => x.ProcessName.StartsWith("haiku")) is Process proc)
             {
                 var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                     ContentTitle = "Warning!",
-                    ContentMessage = "Hollow Knight is open! This may lead to issues when installing mods. Close Hollow Knight?",
+                    ContentMessage = "Haiku the Robot is open! This may lead to issues when installing mods. Close Haiku the Robot?",
                     ButtonDefinitions = ButtonEnum.YesNo,
                     MinHeight = 200,
                     SizeToContent = SizeToContent.WidthAndHeight,

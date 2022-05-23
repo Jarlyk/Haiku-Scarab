@@ -8,8 +8,8 @@ namespace Scarab.Interfaces
         
         string ManagedFolder { get; set; }
         
-        string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
-        string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
+        string ModsFolder     => Path.Combine(ManagedFolder, "BepInEx/plugins");
+        string DisabledFolder => Path.Combine(ModsFolder, "..","Disabled");
 
         void Save();
     }

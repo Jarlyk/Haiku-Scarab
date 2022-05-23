@@ -58,12 +58,12 @@ namespace Scarab.ViewModels
             Trace.WriteLine("Loading settings.");
             Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
 
-            if (!PathUtil.ValidateExisting(settings.ManagedFolder))
+            if (!Directory.Exists(settings.ManagedFolder))
                 settings = await ResetSettings();
 
             Trace.WriteLine("Fetching links");
             
-            (ModLinks, ApiLinks) content;
+            ModLinks content;
             try
             {
                 content = await ModDatabase.FetchContent();
@@ -190,7 +190,7 @@ namespace Scarab.ViewModels
             (
                 new MessageBoxStandardParams {
                     ContentHeader = "Warning",
-                    ContentMessage = "The saved Hollow Knight path is invalid, please re-select a valid path.",
+                    ContentMessage = "The saved Haiku the Robot path is invalid, please re-select a valid path.",
                     // The auto-resize for this lib is buggy, so 
                     // ensure that the message doesn't get cut off 
                     MinWidth = 550
@@ -209,7 +209,7 @@ namespace Scarab.ViewModels
                     new MessageBoxStandardParams
                     {
                         ContentHeader = "Info",
-                        ContentMessage = "Unable to detect your Hollow Knight installation. Please select it."
+                        ContentMessage = "Unable to detect your Haiku the Robot installation. Please select it."
                     }
                 );
 
@@ -225,7 +225,7 @@ namespace Scarab.ViewModels
                 new MessageBoxStandardParams
                 {
                     ContentHeader = "Detected path!",
-                    ContentMessage = $"Detected Hollow Knight install at {path.Root}. Is this correct?",
+                    ContentMessage = $"Detected Haiku the Robot install at {path.Root}. Is this correct?",
                     ButtonDefinitions = ButtonEnum.YesNo
                 }
             );

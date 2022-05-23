@@ -13,11 +13,9 @@ namespace Scarab.Services
 {
     public class ModDatabase : IModDatabase
     {
-        private const string MODLINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ModLinks.xml";
-        private const string APILINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ApiLinks.xml";
+        private const string MODLINKS_URI = "https://raw.githubusercontent.com/Schyvun/Haiku-Modlinks/main/ModLinks.xml";
         
         private const string FALLBACK_MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ModLinks.xml";
-        private const string FALLBACK_APILINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ApiLinks.xml";
 
         public (string Url, int Version, string SHA256) Api { get; }
 
@@ -25,7 +23,7 @@ namespace Scarab.Services
 
         private readonly List<ModItem> _items = new();
 
-        private ModDatabase(IModSource mods, ModLinks ml, ApiLinks al)
+        public ModDatabase(IModSource mods, ModLinks ml)
         {
             foreach (var mod in ml.Manifests)
             {
@@ -46,15 +44,11 @@ namespace Scarab.Services
             }
 
             _items.Sort((a, b) => string.Compare(a.Name, b.Name));
-
-            Api = (al.Manifest.Links.OSUrl, al.Manifest.Version, al.Manifest.Links.SHA256);
         }
 
-        public ModDatabase(IModSource mods, (ModLinks ml, ApiLinks al) links) : this(mods, links.ml, links.al) { }
-
-        public ModDatabase(IModSource mods, string modlinks, string apilinks) : this(mods, FromString<ModLinks>(modlinks), FromString<ApiLinks>(apilinks)) { }
+        public ModDatabase(IModSource mods, string modlinks) : this(mods, FromString<ModLinks>(modlinks)) { }
         
-        public static async Task<(ModLinks, ApiLinks)> FetchContent()
+        public static async Task<ModLinks> FetchContent()
         {
             using var hc = new HttpClient {
                 DefaultRequestHeaders = {
@@ -66,9 +60,8 @@ namespace Scarab.Services
             };
             
             Task<ModLinks> ml = FetchModLinks(hc);
-            Task<ApiLinks> al = FetchApiLinks(hc);
 
-            return (await ml, await al);
+            return await ml;
         }
 
         private static T FromString<T>(string xml)
@@ -83,11 +76,6 @@ namespace Scarab.Services
                 throw new InvalidDataException();
 
             return obj;
-        }
-
-        private static async Task<ApiLinks> FetchApiLinks(HttpClient hc)
-        {
-            return FromString<ApiLinks>(await FetchWithFallback(hc, new Uri(APILINKS_URI), new Uri(FALLBACK_APILINKS_URI)));
         }
         
         private static async Task<ModLinks> FetchModLinks(HttpClient hc)

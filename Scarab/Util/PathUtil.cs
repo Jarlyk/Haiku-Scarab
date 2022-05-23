@@ -17,8 +17,8 @@ namespace Scarab.Util
         private const string NO_SELECT = "No path was selected!";
         private const string NO_SELECT_MAC = "No application was selected!";
 
-        private const string INVALID_PATH_HEADER = "Invalid Hollow Knight path!";
-        private const string INVALID_APP_HEADER = "Invalid Hollow Knight app!";
+        private const string INVALID_PATH_HEADER = "Invalid Haiku the Robot path!";
+        private const string INVALID_APP_HEADER = "Invalid Haiku the Robot app!";
         
         private const string INVALID_PATH = "Select the folder containing hollow_knight_Data or Hollow Knight_Data.";
         private const string INVALID_APP = "Missing Managed folder or Assembly-CSharp!";
@@ -39,7 +39,7 @@ namespace Scarab.Util
 
             var dialog = new OpenFolderDialog
             {
-                Title = "Select your Hollow Knight folder.",
+                Title = "Select your Haiku the Robot folder.",
             };
 
             while (true)
@@ -56,7 +56,7 @@ namespace Scarab.Util
                         MinHeight = 140
                     }).Show();
                 else
-                    return Path.Combine(managed, suffix);
+                    return managed;
 
                 if (fail)
                     return null!;
@@ -67,7 +67,7 @@ namespace Scarab.Util
         {
             var dialog = new OpenFileDialog
             {
-                Title = "Select your Hollow Knight app.",
+                Title = "Select your Haiku the Robot app.",
                 Directory = "/Applications",
                 AllowMultiple = false
             };
@@ -100,7 +100,7 @@ namespace Scarab.Util
             // GoG
             "Hollow Knight_Data/Managed",
             // Steam
-            "hollow_knight_Data/Managed",
+            "Haiku_Data/Managed",
             // Mac
             "Contents/Resources/Data/Managed"
         };
@@ -115,18 +115,7 @@ namespace Scarab.Util
             if (suffix is null || !File.Exists(Path.Combine(root, suffix, "Assembly-CSharp.dll")))
                 return null;
 
-            return new ValidPath(root, suffix);
-        }
-
-        public static bool ValidateExisting(string managed)
-        {
-            // We have the extra case of UnityEngine's dll here
-            // because in cases with old directories or previous issues
-            // the assembly dll can still exist, but UnityEngine.dll
-            // is always unmodified, so we can rely on it.
-            return Directory.Exists(managed)
-                && File.Exists(Path.Combine(managed, "Assembly-CSharp.dll"))
-                && File.Exists(Path.Combine(managed, "UnityEngine.dll"));
+            return new ValidPath(root, "");
         }
     }
 }

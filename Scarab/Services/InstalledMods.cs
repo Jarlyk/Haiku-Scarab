@@ -39,7 +39,6 @@ namespace Scarab.Services
             InstalledMods db = File.Exists(ConfigPath)
                 ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
                 : new InstalledMods();
-
             if (db.ApiInstall is not InstalledState) 
                 return db;
 
@@ -61,14 +60,12 @@ namespace Scarab.Services
              */
             // ReSharper disable once InvertIf
             if (
-                !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Modded)) &&
-                !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Current))
+                !fs.File.Exists(Path.Combine(config.ManagedFolder, "doorstop_config.ini")) 
             ) 
             {
                 Trace.TraceWarning("Assembly missing, marking API as uninstalled!");
                 db.ApiInstall = new NotInstalledState();
             }
-
             return db;
         }
 

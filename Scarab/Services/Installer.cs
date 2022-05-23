@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Microsoft.Toolkit.HighPerformance;
 using Scarab.Interfaces;
 using Scarab.Models;
@@ -57,9 +58,9 @@ namespace Scarab.Services
         
         // If we're going to have one be internal, might as well be consistent
         // ReSharper disable MemberCanBePrivate.Global 
-        internal const string Modded = "Assembly-CSharp.dll.m";
-        internal const string Vanilla = "Assembly-CSharp.dll.v";
-        internal const string Current = "Assembly-CSharp.dll";
+        internal const string Modded = "winhttp.dll.v";
+        internal const string Vanilla = "winhttp.dll";
+        internal const string Current = "winhttp.dll";
         // ReSharper restore MemberCanBePrivate.Global
 
         private readonly SemaphoreSlim _semaphore = new (1);
@@ -132,7 +133,7 @@ namespace Scarab.Services
                     await _ToggleApi(Update.LeaveUnchanged);
                 }
 
-                await _InstallApi(_db.Api);
+                await _InstallApi();
             }
             finally
             {
@@ -140,33 +141,33 @@ namespace Scarab.Services
             }
         }
 
-        private async Task _InstallApi((string Url, int Version, string SHA256) manifest)
+        private async Task _InstallApi()
         {
-            bool was_vanilla = true;
+            // bool was_vanilla = true;
 
             if (_installed.ApiInstall is InstalledState { Version: var version })
             {
-                if (version.Major > manifest.Version)
+                if (version.Major > 0)
                     return;
-
-                was_vanilla = false;
             }
             
-            (string api_url, int ver, string hash) = manifest;
+            //(string api_url, int ver, string hash) = manifest;
 
             string managed = _config.ManagedFolder;
+            
+            string api_url = "https://github.com/Schyvun/Haiku.DebugMod/releases/download/1.0.1.0/Debug.ConfigManager.Package.zip";
 
             (ArraySegment<byte> data, string _) = await DownloadFile(api_url, _ => { });
             
-            ThrowIfInvalidHash("the API", data, hash);
+            //ThrowIfInvalidHash("the API", data, hash);
 
-            // Backup the vanilla assembly
-            if (was_vanilla)
-                _fs.File.Copy(Path.Combine(managed, Current), Path.Combine(managed, Vanilla), true);
+            // Backup the vanilla assembly (not needed for Haiku)
+            //if (was_vanilla)
+            //    _fs.File.Copy(Path.Combine(managed, Current), Path.Combine(managed, Vanilla), true);
 
             ExtractZip(data, managed);
 
-            await _installed.RecordApiState(new InstalledState(true, new Version(ver, 0, 0), true));
+            await _installed.RecordApiState(new InstalledState(true, new Version(1, 0, 0), true));
         }
 
         public async Task ToggleApi()
@@ -191,23 +192,32 @@ namespace Scarab.Services
 
             var st = (InstalledState) _installed.ApiInstall;
 
-            var (move_to, move_from) = st.Enabled
-                // If the api is enabled, move the current (modded) dll
-                // to .m and then take from .v
-                ? (Modded, Vanilla)
-                // Otherwise, we're enabling the api, so move the current (vanilla) dll
-                // And take from our .m file
-                : (Vanilla, Modded);
-            
-            _fs.File.Move(Path.Combine(managed, Current), Path.Combine(managed, move_to), true);
-            _fs.File.Move(Path.Combine(managed, move_from), Path.Combine(managed, Current), true);
+            //var (move_to, move_from) = st.Enabled
+            //    // If the api is enabled, move the current (modded) dll
+            //    // to .m and then take from .v
+            //    ? (Modded, Vanilla)
+            //    // Otherwise, we're enabling the api, so move the current (vanilla) dll
+            //    // And take from our .m file
+            //    : (Vanilla, Modded);
+
+            //_fs.File.Move(Path.Combine(managed, Current), Path.Combine(managed, move_to), true);
+            //_fs.File.Move(Path.Combine(managed, move_from), Path.Combine(managed, Current), true);
+
+            if (st.Enabled)
+            {
+                _fs.File.Move(Path.Combine(managed, Vanilla), Path.Combine(managed, Modded ), true);
+            }
+            else
+            {
+                _fs.File.Move(Path.Combine(managed, Modded), Path.Combine(managed, Vanilla), true);
+            }
 
             await _installed.RecordApiState(st with { Enabled = !st.Enabled });
 
             // If we're out of date, and re-enabling the api - update it.
-            // Note we do this *after* we put the API in place.
-            if (update == Update.ForceUpdate && !st.Enabled && st.Version.Major < _db.Api.Version)
-                await _InstallApi(_db.Api);
+            // Note we do this *after* we put the API in place. (Not needed for Haiku since no "mapi" = BepInEx updates)
+            //if (update == Update.ForceUpdate && !st.Enabled && st.Version.Major < _db.Api.Version)
+            //    await _InstallApi();
         }
 
         /// <summary>
@@ -297,25 +307,25 @@ namespace Scarab.Services
             switch (ext)
             {
                 case ".zip":
-                {
-                    ExtractZip(data, mod_folder);
+                    {
+                        ExtractZip(data, mod_folder);
 
-                    break;
-                }
+                        break;
+                    }
 
                 case ".dll":
-                {
-                    Directory.CreateDirectory(mod_folder);
+                    {
+                        Directory.CreateDirectory(mod_folder);
 
-                    await _fs.File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data.Array);
+                        await _fs.File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data.Array);
 
-                    break;
-                }
+                        break;
+                    }
 
                 default:
-                {
-                    throw new NotImplementedException($"Unknown file type for mod download: {filename}");
-                }
+                    {
+                        throw new NotImplementedException($"Unknown file type for mod download: {filename}");
+                    }
             }
 
             mod.State = mod.State switch {
