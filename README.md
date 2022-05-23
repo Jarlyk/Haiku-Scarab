@@ -6,6 +6,6 @@ This is a mod manager for Haiku aimed at making the process of installing mods e
 
 ![screenshot](https://i.imgur.com/V3UW99s.png)
 
-# How to Add your Mod
+# How To Add Your Mod
 Go to https://github.com/Schyvun/Haiku-Modlinks/blob/main/ModLinks.xml and add your mod by creating a pull request.
 
