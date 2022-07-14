@@ -13,7 +13,7 @@ namespace Scarab.Services
 {
     public class ModDatabase : IModDatabase
     {
-        private const string MODLINKS_URI = "https://raw.githubusercontent.com/Schyvun/Haiku-Modlinks/main/ModLinks.xml";
+        private const string MODLINKS_URI = "https://raw.githubusercontent.com/Jarlyk/Haiku-Modlinks/main/ModLinks.xml";
         
         private const string FALLBACK_MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ModLinks.xml";
 
